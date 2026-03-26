@@ -1,0 +1,63 @@
+# Dataset Related (Point-MAE uses 2048 points, but 1024 is also common)
+num_points: 2048
+dataset:
+  common:
+    NAME: ShapeNet55Cls
+    data_dir: './data/ShapeNet55'
+  train:
+    split: train
+    num_points: 2048
+  val:
+    split: test
+    num_points: 2048
+
+feature_keys: pos
+
+datatransforms:
+  train: [PointsToTensor, PointCloudScaleAndTranslate]
+  vote: [PointCloudScaleAndTranslate]
+  val: [PointsToTensor]
+  kwargs:
+    shift: [0.2, 0.2, 0.2]
+
+batch_size: 32
+dataloader:
+  num_workers: 6
+
+num_classes: 55
+
+# ---------------------------------------------------------------------------- #
+# Training cfgs (based on Point-BERT/Point-MAE settings)
+# ---------------------------------------------------------------------------- #
+sched: cosine
+epochs: 300
+warmup_epochs: 10
+min_lr: null
+
+# Point-MAE uses lr=0.0005 for finetuning
+lr: 0.001
+optimizer:
+  NAME: 'adamw'
+  weight_decay: 0.05
+
+# Point-MAE uses grad_norm_clip=10
+grad_norm_clip: 1
+
+criterion_args:
+  NAME: SmoothCrossEntropy
+  label_smoothing: 0.2
+
+# ---------------------------------------------------------------------------- #
+# io and misc
+# ---------------------------------------------------------------------------- #
+log_dir: 'shapenet55'
+print_freq: 10
+val_freq: 1
+
+val_batch_size: 64
+pretrained_path: null
+
+wandb:
+  project: PointNeXt-ShapeNet55
+
+seed: null
